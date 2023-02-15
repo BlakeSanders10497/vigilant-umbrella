@@ -33,7 +33,12 @@ class NodeTemplate(Node):
         drive = AckermannDrive()
 
         #Right trigger mapped to speed of 0-100
-        speed = (1-msg.axes[5])*50
+        left_stick_y = msg.axes[0]
+        lt = (1-msg.axes[2]) * 0.5
+        rt = (1-msg.axes[5]) * 0.5
+        max_speed = 6.35
+        
+        speed = (rt-lt)*max_speed
 
         #Left Joystick mapped from -45 to 45 for steering
         turn_angle = -msg.axes[0]*45
