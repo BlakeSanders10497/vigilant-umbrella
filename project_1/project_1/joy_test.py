@@ -15,6 +15,7 @@ from rclpy.node import Node
 from std_msgs.msg import Int16, Float32, String
 from sensor_msgs.msg import Joy
 from ackermann_msgs.msg import AckermannDriveStamped, AckermannDrive
+import math
 
 
 class NodeTemplate(Node):
@@ -41,7 +42,7 @@ class NodeTemplate(Node):
         speed = (rt-lt)*max_speed
 
         #Left Joystick mapped from -45 to 45 for steering
-        turn_angle = -msg.axes[0]*45
+        turn_angle = (-msg.axes[0]*45)*math.pi/180
 
         #Add parameters to AckermannDrive
         drive.steering_angle = turn_angle
