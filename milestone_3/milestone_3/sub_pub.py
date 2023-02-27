@@ -34,23 +34,23 @@ class NodeTemplate(Node):
         drive = AckermannDrive()
 
         #Get distances from Lidar
-        d_setpoint = msg.ranges[0]
-        d_offset = msg.ranges[40]
+        d = msg.ranges[180]
+        d_offset = msg.ranges[220]
 
         #Calculate angle alpha, perpendicular distance to the wall, and look ahead perpendicular distance to the wall
-        alpha = math.atan2((d_offset * math.cos(20*math.pi/180) - d_setpoint)/(d_offset*math.sin(20*math.pi/180)))
-        D_perp = d_setpoint * math.cos(alpha)
-        D_perpL = 20*math.sin(alpha) + D_perp
+        alpha = math.atan2((d_offset * math.cos(20*math.pi/180) - d), (d_offset*math.sin(20*math.pi/180)))
+        D_perp = d * math.cos(alpha)
+        D_perpL = 0.2*math.sin(alpha) + D_perp
 
         #Calculate error from wall
-        error = d_setpoint - D_perpL
+        error = 1 - D_perpL
 
         #Set constant speed
-        speed = 1
+        speed = 1.0
         drive.speed = speed
 
         #Set static turn angle for BB and convert to rad
-        turn_angle = 20*math.pi/180
+        turn_angle = -20*math.pi/180
 
         if error > 0:
             drive.steering_angle = turn_angle
