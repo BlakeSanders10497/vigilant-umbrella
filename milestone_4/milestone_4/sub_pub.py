@@ -18,6 +18,8 @@ from ackermann_msgs.msg import AckermannDriveStamped, AckermannDrive
 class NodeTemplate(Node):
     """Node Description"""
 
+    error_data = list()
+
     def __init__(self):
         super().__init__("my_sub_pub")
 
@@ -36,27 +38,28 @@ class NodeTemplate(Node):
         d_offset = msg.ranges[220]
 
         #Calculate angle alpha, perpendicular distance to the wall, and look ahead perpendicular distance to the wall
-        alpha = math.atan2((d_offset * math.cos(20*math.pi/180) - d)/(d_offset*math.sin(20*math.pi/180)))
+        alpha = math.atan2((d_offset * math.cos(20*math.pi/180) - d), (d_offset*math.sin(20*math.pi/180)))
         D_perp = d * math.cos(alpha)
         D_perpL = 0.2*math.sin(alpha) + D_perp
 
         #Set target distance and calculate error from wall
         d_setpoint = 0.5
-        error = d_setpoint - D_perpL
+        error = d_setpoint - D_perpL 
 
         #Proportional Controller
-        K_p = 1 #Tune this value
+        K_p = 45 #Tune this value
         u_1 = K_p*error
 
         #Integral Controller
-        K_i = 1 #Tune this value
+        K_i = 0 #Tune this value
         delta_t = 0.1
 
-        error_data = error_data.append(error)
-        if error_data.size() > 100:
-            error_data.pop(0)
+        self.error_data.append(error)
+        if len(self.error_data) > 100:
+            self.error_data.pop(0)
 
-        error_sum = error_data.sum()
+        error_sum = sum(self.error_data)
+
 
         u_2 = K_i*error_sum*delta_t
 
@@ -74,7 +77,7 @@ class NodeTemplate(Node):
         drive.steering_angle = u_rad
 
         #Set constant speed
-        speed = 1
+        speed = 1.0
         drive.speed = speed
 
         #Add AckermannDrive to AckermannDriveStamped

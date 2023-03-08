@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'run_pid = milestone_3.sub_pub:main'
+            'run_pid = milestone_4.sub_pub:main'
         ],
     },
 )
