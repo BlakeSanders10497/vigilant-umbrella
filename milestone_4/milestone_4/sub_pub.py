@@ -36,6 +36,9 @@ class NodeTemplate(Node):
         #Get distances from Lidar
         d = msg.ranges[180]
         d_offset = msg.ranges[220]
+        
+        if(math.isnan(d) or math.isinf(d)): d = 0
+        if(math.isnan(d_offset) or math.isinf(d_offset)): d_offset = 0
 
         #Calculate angle alpha, perpendicular distance to the wall, and look ahead perpendicular distance to the wall
         alpha = math.atan2((d_offset * math.cos(20*math.pi/180) - d), (d_offset*math.sin(20*math.pi/180)))
@@ -43,11 +46,11 @@ class NodeTemplate(Node):
         D_perpL = 0.2*math.sin(alpha) + D_perp
 
         #Set target distance and calculate error from wall
-        d_setpoint = 0.5
-        error = d_setpoint - D_perpL 
+        d_setpoint = 1.0
+        error = D_perpL - d_setpoint 
 
         #Proportional Controller
-        K_p = 45 #Tune this value
+        K_p = 30 #Tune this value
         u_1 = K_p*error
 
         #Integral Controller
@@ -59,6 +62,7 @@ class NodeTemplate(Node):
             self.error_data.pop(0)
 
         error_sum = sum(self.error_data)
+        if(math.isnan(error_sum) or math.isinf(error_sum)): error_sum = 0
 
 
         u_2 = K_i*error_sum*delta_t
@@ -77,7 +81,7 @@ class NodeTemplate(Node):
         drive.steering_angle = u_rad
 
         #Set constant speed
-        speed = 1.0
+        speed = 1.5
         drive.speed = speed
 
         #Add AckermannDrive to AckermannDriveStamped
@@ -89,6 +93,8 @@ class NodeTemplate(Node):
         #Print out useful info
         self.get_logger().info(f"Error: = {error}")
         self.get_logger().info(f"Error sum: = {error_sum}")
+        self.get_logger().info(f"d: = {d}")
+        self.get_logger().info(f"d_offset: = {d_offset}")
         self.get_logger().info(f"U_1: = {u_1}")
         self.get_logger().info(f"U_2: = {u_2}")
         self.get_logger().info(f"Turn Command: = {u}")

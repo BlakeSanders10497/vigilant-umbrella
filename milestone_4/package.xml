@@ -3,7 +3,7 @@
 <package format="3">
   <name>milestone_4</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Wall following algorithm using a PID controller and LiDAR sensor.</description>
   <maintainer email="marcusmlack@ufl.edu">marcusmlack</maintainer>
   <license>TODO: License declaration</license>
 

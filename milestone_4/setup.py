@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer='marcusmlack',
     maintainer_email='marcusmlack@ufl.edu',
-    description='TODO: Package description',
+    description='Wall-following algorithm using a PID controller and LiDAR sensor.',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
