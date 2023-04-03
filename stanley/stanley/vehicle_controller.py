@@ -56,10 +56,13 @@ class VehicleController(Node):
         self.last_pause_value = False
 
         self.have_vehicle_pose = False
+        self.get_logger().info(f"vehicle pose = false")
         self.have_goal_pose = False
+        self.get_logger().info(f"goal pose = false")
 
     def vehicle_pose_callback(self, msg):
         self.have_vehicle_pose = True
+        self.get_logger().info(f"vehicle pose = true")
 
         self.vehicle_point[0] = msg.pose.position.x
         self.vehicle_point[1] = msg.pose.position.y
@@ -68,6 +71,7 @@ class VehicleController(Node):
 
     def current_goal_pose_callback(self, msg):
         self.have_goal_pose = True
+        self.get_logger().info(f"goal pose = true")
 
         self.current_goal_point[0] = msg.current_goal_pose.pose.position.x
         self.current_goal_point[1] = msg.current_goal_pose.pose.position.y
@@ -117,6 +121,8 @@ class VehicleController(Node):
         # This will only publish after each subscription has occured at least once
         if self.have_goal_pose and self.have_vehicle_pose:
 
+            self.get_logger().info(f"Stage 1")
+
             #Create vector from current vehicle pose to goal pose
             vec_to_carrot = self.current_goal_point - self.vehicle_point
             #Unitize Vector
@@ -126,11 +132,15 @@ class VehicleController(Node):
             #Calculate error in radians of vehicle heading to carrot heading
             heading_error_rad = heading_to_carrot_rad - self.vehicle_heading_rad
 
+            self.get_logger().info(f"Stage 2")
+
             #Add bounds for heading error
-            while heading_error_rad < math.pi:
+            while heading_error_rad > math.pi:
                 heading_error_rad -= 2.0*math.pi
-            while heading_error_rad < math.pi:
+            while heading_error_rad < -math.pi:
                 heading_error_rad += 2.0*math.pi
+
+            self.get_logger().info(f"Stage 3")
 
             #If car is moving, calculate new steering angle based on PID, if car not moving then change is zero
             if(self.speed > 0.0):
